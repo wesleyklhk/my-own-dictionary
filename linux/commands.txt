@@ -1,0 +1,10 @@
+//show all active processes
+ps aux 
+
+//forcefully kill a process
+//E.g kill -9 2000
+kill -9 <pid>
+
+
+//netstat with pid
+netstat -a -p -n
