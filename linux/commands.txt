@@ -7,4 +7,15 @@ kill -9 <pid>
 
 
 //netstat with pid
-netstat -a -p -n
+//-p will list pid column
+//-l will only list listening state
+netstat -p
+
+//curl post json
+curl -H "Content-Type: application/json" -X POST -d "{a:'123',b:234}" http://www.google.com
+
+//curl post
+curl -d "a=123&b=234" http://www.google.com
+
+//http://evelynnote.blogspot.hk/2011/03/curl.html
+
