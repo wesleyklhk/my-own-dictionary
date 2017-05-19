@@ -1,2 +1,11 @@
 //check free memory
 free -m
+
+//proc
+cd /proc
+less -a meminfo
+
+//top
+//top commands acts like windows task manager
+//shows u the cpu usage along with memory usage for each process with PID
+top

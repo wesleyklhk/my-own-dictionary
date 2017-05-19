@@ -18,3 +18,13 @@ ls
 service mongodb stop
 //to start a service
 service mongodb start
+
+
+
+
+//proc
+//inside /proc, there are lots of readonly system information
+//u can use this to check memory status, ioports
+cd /proc
+less -a meminfo //memory status
+less -a ioports

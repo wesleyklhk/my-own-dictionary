@@ -19,3 +19,23 @@ curl -d "a=123&b=234" http://www.google.com
 
 //http://evelynnote.blogspot.hk/2011/03/curl.html
 
+
+//open a file
+less -a commands.txt
+
+//grep
+//-r recursively search (including sub directories)
+//-n show line number
+//grep [options...] pattern [files...]
+//[] means optional
+grep -r -n "service"//in this case [options...] = -r -n and pattern = "service" and [files...] = ""
+
+
+
+//chmod
+//chmod [option] ... [MODE] .... [FILE]
+//r:4 w:2 x:1
+//owner = rwx = 4+2+1 = 7
+//group = rwx = 4+2+1 = 7
+//others= --- = 0+0+0 = 0
+chmod -R 770 xyz
