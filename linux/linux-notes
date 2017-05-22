@@ -1,0 +1,30 @@
+//PATH variable
+//PATH contains a list of directories separated by ":". Any executables within these directories can be globally accessed.
+//setting PATH variable
+//u can set the PATH variable in ~/.bashrc
+//at the end of the file, add something like this:
+export PATH=/usr/local/node-v6.7.0-linux-x64/bin:$PATH
+
+
+
+
+
+//services
+//linux stores all the service startup scripts in /etc/init.d
+//in this directory, u will find alot of services
+cd /etc/init.d
+ls
+//to stop a service
+service mongodb stop
+//to start a service
+service mongodb start
+
+
+
+
+//proc
+//inside /proc, there are lots of readonly system information
+//u can use this to check memory status, ioports
+cd /proc
+less -a meminfo //memory status
+less -a ioports
