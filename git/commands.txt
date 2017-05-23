@@ -64,6 +64,11 @@ git checkout master
 //use the following branch
 git merge <branch to be merged to master>
 
+
+git reset --hard <label> //completely remove all staged and unstaged changes to tracked files.
+
+
+
 /********************************************READ THIS***************************************************************/
 //how to merge local branch?
 //lets assume that u already commit ur changes in ur local branch(not master)
