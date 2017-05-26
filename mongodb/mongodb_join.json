@@ -1,0 +1,293 @@
+db.patron.aggregate([
+   {
+      $unwind: "$clubs"
+   },
+   { 
+      $lookup:
+         {
+            from: "club",
+            localField: "clubs.clubCode",
+            foreignField: "_id",
+            as: "inventory_docs"
+        }
+   },
+   {
+      $match: { 
+          "inventory_docs": { $ne: [] } 
+      }
+   }
+])
+
+
+
+db.patron.aggregate([
+    {
+        $match:{
+            gender: 'Female'
+        }
+    },
+   {
+      $project: {
+         activeClubs: {
+            $filter: {
+               input: "$clubs",
+               as: "club",
+               //cond: { $eq: [ "$$club.isActive", true ] }
+                cond: { $eq: [ "$$club.isActive", true ] }
+            }
+         },
+         patron: "$$ROOT"
+      }
+   }
+   ,{
+       $match:{
+           'activeClubs': {$ne: null,$size: 1}
+       }
+    },
+   {
+      $project: {
+        activeClub :{$arrayElemAt:['$$ROOT.activeClubs',0]},
+//        tiers: '$$ROOT.activeClubs[0]tiers',
+//        tier: '$$ROOT.activeClubs[0]tier',
+        patron: '$$ROOT.patron'
+      }
+   }  ,
+   {
+      $project: {
+        activeClub :'$$ROOT.activeClub',
+        tier: '$$ROOT.activeClub.tier',
+        tiers: '$$ROOT.activeClub.tiers',          
+//        tiers: '$$ROOT.activeClubs[0]tiers',
+//        tier: '$$ROOT.activeClubs[0]tier',
+        patron: '$$ROOT.patron'
+      }
+   }    
+])
+
+
+
+
+
+
+
+
+
+
+db.patron.aggregate([
+    {
+        $match:{
+            
+        }
+    },
+   {
+      $project: {
+         activeClubs: {
+            $filter: {
+               input: "$clubs",
+               as: "club",
+               //cond: { $eq: [ "$$club.isActive", true ] }
+                cond: { $eq: [ "$$club.isActive", true ] }
+            }
+         },
+         patron: "$$ROOT"
+      }
+   }
+   ,{
+       $match:{
+           'activeClubs': {$ne: null}
+       }
+    },
+   {
+      $project: {
+        activeClub :{$arrayElemAt:['$$ROOT.activeClubs',0]},
+//        tiers: '$$ROOT.activeClubs[0]tiers',
+//        tier: '$$ROOT.activeClubs[0]tier',
+        patron: '$$ROOT.patron'
+      }
+   }  ,
+   {
+      $project: {
+        activeClub :'$$ROOT.activeClub',
+        tier: '$$ROOT.activeClub.tier',
+        tiers: '$$ROOT.activeClub.tiers',          
+//        tiers: '$$ROOT.activeClubs[0]tiers',
+//        tier: '$$ROOT.activeClubs[0]tier',
+        patron: '$$ROOT.patron'
+      }
+   } , { 
+      $lookup:
+         {
+            from: "club",
+            localField: "activeClub.clubCode",
+            foreignField: "name",
+            as: "joinedClub"
+        }
+   } , {
+       $project: {
+            joinedClub: {$arrayElemAt:['$joinedClub',0]},
+            patron: "$patron",
+            tier: "$tier"
+       }
+   } , {
+       $match: {
+           joinedClub :{
+               $exists: true,
+               $ne: null
+           }
+       }
+   } , {
+       $project: {
+            joinedClub: "$joinedClub",
+            patron: "$patron",
+            tier: "$tier",
+            validTier:{
+                $elemMatch: ['$joinedClub.tiers',]
+            }
+       }
+   }
+])
+
+
+
+
+
+
+
+
+
+
+db.club.aggregate([
+{
+    $unwind : '$tiers'
+},
+{
+    $project:{
+        clubName: '$name',
+        tierName: '$tiers.name',
+        securityLevel:'$tiers.securityLevel'
+    }
+},
+{
+    $match:{
+        securityLevel:{
+            $gte: 1 //depends on the provided security level
+        }
+    }
+},
+{
+    $lookup:{
+        from: "patron",
+        localField: "clubName",
+        foreignField: "clubs.clubCode",
+        as: "patrons"        
+    }
+}
+
+
+
+])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+db.patron.aggregate([
+    {
+        $match:{
+            
+        }
+    },
+   {
+      $project: {
+         activeClubs: {
+            $filter: {
+               input: "$clubs",
+               as: "club",
+               //cond: { $eq: [ "$$club.isActive", true ] }
+                cond: { $eq: [ "$$club.isActive", true ] }
+            }
+         },
+         patron: "$$ROOT"
+      }
+   }
+   ,{
+       $match:{
+           'activeClubs': {$ne: null}
+       }
+    },
+   {
+      $project: {
+        activeClub :{$arrayElemAt:['$$ROOT.activeClubs',0]},
+//        tiers: '$$ROOT.activeClubs[0]tiers',
+//        tier: '$$ROOT.activeClubs[0]tier',
+        patron: '$$ROOT.patron'
+      }
+   }  ,
+   {
+      $project: {
+        activeClub :'$$ROOT.activeClub',
+        tier: '$$ROOT.activeClub.tier',
+        tiers: '$$ROOT.activeClub.tiers',
+        combinedName: {
+            $concat:['$activeClub.clubCode','$activeClub.tier.tierCode']
+        },
+//        tiers: '$$ROOT.activeClubs[0]tiers',
+//        tier: '$$ROOT.activeClubs[0]tier',
+        patron: '$$ROOT.patron'
+      }
+   }
+,
+   {
+        $lookup:{
+            from: "unwindedTierInfo",
+            localField: "combinedName",
+            foreignField: "_id",
+            as: "LegitTierInfo"            
+        }
+   }
+,
+{
+    $match:{
+        LegitTierInfo:{
+            $exists:true,
+            $ne:null,
+            $size:1
+        }
+    }
+}   
+,
+{
+    $project:{
+        patron:'$patron',
+        LegitTierInfo :{$arrayElemAt:['$LegitTierInfo',0]}
+    }
+}
+,
+{
+    $project:{
+        patron:'$patron',
+        securityLevel :'$LegitTierInfo.securityLevel'
+    }
+}   
+])
