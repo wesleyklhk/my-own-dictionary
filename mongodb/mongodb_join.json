@@ -200,7 +200,38 @@ db.club.aggregate([
 
 
 
-
+db.club.aggregate([
+{
+    $unwind : '$tiers'
+},
+{
+    $project:{
+        clubName: '$name',
+        tierName: '$tiers.name',
+        securityLevel:'$tiers.securityLevel'
+    }
+},
+{
+    $match:{
+        securityLevel:{
+            $gte: 1 //depends on the provided security level
+        }
+    }
+},
+{
+    $project:{
+        _id: {
+            $concat:['$clubName','$tierName']
+        },
+        clubName: '$clubName',
+        tierName: '$tierName',
+        securityLevel:'$securityLevel'
+    }
+},
+{
+        $out:'unwindedTierInfo'
+}
+])
 
 
 
