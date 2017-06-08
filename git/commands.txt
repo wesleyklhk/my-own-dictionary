@@ -91,3 +91,11 @@ git status
 git add -A .
 git commit -m "comments"
 git push -u origin master <remote branch label>
+
+
+
+
+
+/********pull from remote branch****************/
+git checkout --track origin/daves_branch
+
